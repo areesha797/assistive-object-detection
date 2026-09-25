@@ -1,6 +1,7 @@
+
 import streamlit as st
 from PIL import Image
-import pyttsx3
+import streamlit.components.v1 as components
 
 from detector import detect_objects
 
@@ -104,22 +105,29 @@ if st.session_state.scene_description:
 
     if st.button("Read Scene Aloud"):
 
-        try:
+        scene_text = st.session_state.scene_description
 
-            engine = pyttsx3.init()
+        # Escape text safely for JavaScript
+        import json
 
-            engine.setProperty("rate", 150)
+        safe_text = json.dumps(scene_text)
 
-            engine.say(
-                st.session_state.scene_description
-            )
+        components.html(
+            f"""
+            <script>
+                const text = {safe_text};
 
-            engine.runAndWait()
+                const utterance =
+                    new SpeechSynthesisUtterance(text);
 
-            engine.stop()
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
 
-            st.success("Scene description spoken successfully.")
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            </script>
+            """,
+            height=50,
+        )
 
-        except Exception as e:
-
-            st.error(f"Text-to-speech error: {e}")
+        st.success("Scene description is being read aloud.")
