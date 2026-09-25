@@ -1,5 +1,5 @@
 ultralytics
-opencv-python
+opencv-python-headless
 streamlit
 pyttsx3
 Pillow
